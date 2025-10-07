@@ -2,8 +2,8 @@ from smtplib import SMTP_SSL
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from jinja2 import Environment, FileSystemLoader
-from exceptions import EmailTemplateInvalidException, EmailSendException
-from config.constants import (
+from src.exceptions import EmailTemplateInvalidException, EmailSendException
+from src.config.constants import (
     EMAIL_PASSWORD,
     EMAIL_PORT,
     EMAIL_SMTP_SERVER,

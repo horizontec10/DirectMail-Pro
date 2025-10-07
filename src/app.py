@@ -1,5 +1,5 @@
-from core.email_service import EmailSender, EmailBuilder
-from utils.file_handler import get_email_list
+from src.core.email_service import EmailSender, EmailBuilder
+from src.utils.file_handler import get_email_list
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
