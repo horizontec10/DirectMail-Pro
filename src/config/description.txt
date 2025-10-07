@@ -1,0 +1,2 @@
+Separar as configurações por ambiente (development, production) permite que você
+use credenciais ou configurações diferentes sem alterar o código principal.

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coletor de Dados para E-mail Corporativo</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #f0f4ff, #e8ebf5);
+        }
+
+        .container {
+            max-width: 720px; 
+            margin: auto; 
+            background: #ffffff; 
+            padding: 35px 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .container:hover { transform: translateY(-3px); }
+
+        h1 {
+            color: #004aad; 
+            border-bottom: 3px solid #1e90ff; 
+            padding-bottom: 12px; 
+            margin-bottom: 25px;
+            font-size: 26px;
+        }
+
+        label {
+            display: block; 
+            margin-top: 20px; 
+            font-weight: 600; 
+            color: #333;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: #1e90ff;
+            box-shadow: 0 0 8px rgba(30, 144, 255, 0.2);
+            outline: none;
+        }
+
+        textarea { height: 180px; resize: vertical; }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #004aad; 
+            color: white; 
+            padding: 14px 22px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            font-size: 16px; 
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover { background-color: #1e90ff; transform: translateY(-2px); }
+
+        .spinner-btn {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            margin-left: 8px;
+            vertical-align: middle;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #response-message {
+            margin-top: 20px; 
+            padding: 12px; 
+            border-radius: 6px; 
+            display: none;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container { padding: 25px 20px; }
+            h1 { font-size: 22px; }
+            button { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dados para E-mail Corporativo</h1>
+        <form id="emailForm" enctype="multipart/form-data">
+            <label>Modo de envio:</label>
+            <select id="mode" name="mode" required>
+                <option value="single" selected>Um único e-mail</option>
+                <option value="bulk">Vários e-mails via CSV</option>
+            </select>
+
+            <div id="single_email_div" class="conditional-div">
+                <label for="recipient">Destinatário:</label>
+                <input type="text" id="recipient" name="recipient" placeholder="exemplo@cliente.com">
+            </div>
+
+            <div id="csv_file_div" class="conditional-div" style="display:none;">
+                <label for="csv_file">Arquivo CSV:</label>
+                <input type="file" id="csv_file" name="csv_file" accept=".csv">
+            </div>
+
+            <label for="subject">Assunto do E-mail:</label>
+            <input type="text" id="subject" name="subject" required>
+
+            <label for="name_employee">Seu Nome:</label>
+            <input type="text" id="name_employee" name="name_employee" required>
+
+            <label for="position">Posição:</label>
+            <select id="position" name="position">
+                <option value="Vendedor" selected>Vendedor</option>
+                <option value="CEO">CEO</option>
+                <option value="Diretor de vendas">Diretor de vendas</option>
+            </select>
+
+            <label for="day_shift">Saudação:</label>
+            <input type="text" id="day_shift" name="day_shift" value="Prezado(a) Cliente," required>
+
+            <label for="body_text">Corpo do E-mail:</label>
+            <textarea id="body_text" name="body_text" required></textarea>
+
+            <button type="submit" id="submitBtn">
+                <span id="btn-text">Enviar</span>
+                <span id="btn-spinner" class="spinner-btn" style="display:none;"></span>
+            </button>
+        </form>
+
+        <div id="response-message"></div>
+    </div>
+
+    <script>
+        const modeSelect = document.getElementById('mode');
+        const singleDiv = document.getElementById('single_email_div');
+        const csvDiv = document.getElementById('csv_file_div');
+        const form = document.getElementById('emailForm');
+        const responseDiv = document.getElementById('response-message');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
+
+        // Alterna divs de envio
+        const toggleDivs = () => {
+            if(modeSelect.value === 'single') {
+                singleDiv.style.display = 'block';
+                csvDiv.style.display = 'none';
+            } else {
+                singleDiv.style.display = 'none';
+                csvDiv.style.display = 'block';
+            }
+        };
+        modeSelect.addEventListener('change', toggleDivs);
+        window.addEventListener('load', toggleDivs);
+
+        // Envio via fetch
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            btnText.innerText = 'Enviando...';
+            btnSpinner.style.display = 'inline-block';
+            submitBtn.disabled = true;
+            responseDiv.style.display = 'none';
+
+            const formData = new FormData(form);
+
+            try {
+                const res = await fetch('/send-email', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                btnText.innerText = 'Enviar';
+                btnSpinner.style.display = 'none';
+                submitBtn.disabled = false;
+
+                responseDiv.style.display = 'block';
+                if(data.status === true){
+                    responseDiv.style.background = '#d4edda';
+                    responseDiv.style.color = '#155724';
+                } else {
+                    responseDiv.style.background = '#f8d7da';
+                    responseDiv.style.color = '#721c24';
+                }
+                responseDiv.innerText = data.response;
+
+            } catch (err) {
+                btnText.innerText = 'Enviar';
+                btnSpinner.style.display = 'none';
+                submitBtn.disabled = false;
+
+                responseDiv.style.display = 'block';
+                responseDiv.style.background = '#f8d7da';
+                responseDiv.style.color = '#721c24';
+                responseDiv.innerText = 'Ocorreu um erro ao enviar o e-mail.';
+            }
+        });
+    </script>
+</body>
+</html>

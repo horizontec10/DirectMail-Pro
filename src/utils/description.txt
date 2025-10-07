@@ -1,0 +1,1 @@
+Funções genéricas que podem ser usadas em diversos locais.

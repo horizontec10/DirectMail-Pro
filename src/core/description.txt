@@ -1,0 +1,2 @@
+Aqui fica a inteligência do projeto, como a conexão com o servidor de e-mail (SMTP) 
+ou a API do serviço de envio (como SendGrid, AWS SES, etc.).
