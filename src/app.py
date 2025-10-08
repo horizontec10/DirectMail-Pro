@@ -41,7 +41,7 @@ def process_email_submission() -> str:
             )
         return jsonify({"response": "As informações enviadas para o(s) e-mail(s) com sucesso!", "status": True}), 201
     except Exception as e:
-        return jsonify({"response": f"Erro ao enviar o e-mail: {str(e)}", "status": False}), 401
+        return jsonify({"response": str(e), "status": False}), 401
 
 if __name__ == "__main__":
 

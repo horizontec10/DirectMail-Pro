@@ -1,4 +1,4 @@
-from smtplib import SMTP_SSL
+from smtplib import SMTP
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from jinja2 import Environment, FileSystemLoader
@@ -48,11 +48,14 @@ class EmailSender:
             message["Subject"] = subject
             
             message.attach(MIMEText(body_email, "html"))
+            with SMTP(self._email_smtp_server, self._email_port, timeout=10) as server:
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+               
+                server.login(self._email_server, self._email_password)
+                server.send_message(msg=message)
 
-            server = SMTP_SSL(self._email_smtp_server, self._email_port)
-            server.login(self._email_server, self._email_password)
-            server.send_message(message)
-            server.quit()
             return 
         except Exception as e:
             raise EmailSendException(f"Erro ao enviar o e-mail: {str(e)}")
