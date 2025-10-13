@@ -1,8 +1,11 @@
 from src.core.email_service import EmailSender, EmailBuilder
 from src.utils.file_handler import get_email_list
+from src.services.email_service import EmailService
+from src.dto.email_dtos import EmailCreateDTO, EmailFilterDTO
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
+email_service = EmailService()
 
 @app.route("/", methods=["GET"])
 def index():
@@ -16,6 +19,7 @@ def process_email_submission() -> str:
     position = request.form.get("position")
     # Informações do cliente
     mode = request.form.get("mode")
+
 
     if mode == "single":
         recipients = [request.form.get("recipient")]
@@ -39,10 +43,18 @@ def process_email_submission() -> str:
                 subject=subject,
                 body_email=body_email
             )
-        return jsonify({"response": "As informações enviadas para o(s) e-mail(s) com sucesso!", "status": True}), 201
+            email_create = EmailCreateDTO(
+                email=recipient,
+                subject=subject,
+                body_email=f"{day_shift}\n{body_text}",
+                position_employee=position,
+                name_employee=name_employee
+            )
+            reponse_email = email_service.create(email_create_dto=email_create)
+        return jsonify({"response": f"{reponse_email.model_dump()}", "status": True}), 201
     except Exception as e:
         return jsonify({"response": str(e), "status": False}), 401
 
 if __name__ == "__main__":
 
-    app.run(host="0.0.0.0", port=5000)
+    app.run("0.0.0.0", debug=True, port=8080)

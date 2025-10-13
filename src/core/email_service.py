@@ -1,4 +1,6 @@
 from smtplib import SMTP
+from email import message_from_bytes
+from imaplib import IMAP4_SSL
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from jinja2 import Environment, FileSystemLoader
@@ -9,6 +11,7 @@ from src.config.constants import (
     EMAIL_SMTP_SERVER,
     EMAIL_SERVER,
     EMAIL_SENDER,
+    EMAIL_IMAP_SERVER,
     TEMPLATES_HORIZONTEC
 )
 
@@ -59,4 +62,3 @@ class EmailSender:
             return 
         except Exception as e:
             raise EmailSendException(f"Erro ao enviar o e-mail: {str(e)}")
-
